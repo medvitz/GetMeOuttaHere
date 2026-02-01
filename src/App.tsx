@@ -1,7 +1,18 @@
-import { useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useWeatherSearch } from './hooks/useWeatherSearch';
+import { geocodingService } from './services/geocodingService';
+import { ZipInput } from './components/ZipInput';
+import { DriveTimeSlider } from './components/DriveTimeSlider';
+import { ResultsList } from './components/ResultsList';
+import { TopFivePanel } from './components/TopFivePanel';
+import { MapView } from './components/MapView';
+import type { Coordinates } from './types';
 
 function App() {
+  const [zipCode, setZipCode] = useState('');
+  const [driveTime, setDriveTime] = useState(8);
+  const [originCoords, setOriginCoords] = useState<Coordinates | null>(null);
+
   const {
     isLoading,
     progress,
@@ -12,97 +23,152 @@ function App() {
     search,
   } = useWeatherSearch();
 
-  // Demo: Run a search on mount and log results
-  useEffect(() => {
-    console.log('Starting demo search from NYC (10001) with 8 hour drive time...');
-    search('10001', 8);
-  }, [search]);
+  const handleSearch = useCallback(() => {
+    if (zipCode.length !== 5) return;
 
-  // Log state changes
-  useEffect(() => {
-    if (isLoading) {
-      console.log(`Loading... ${progress}% (${results.length} results so far)`);
-    }
-  }, [isLoading, progress, results.length]);
+    const coords = geocodingService.getCoordinates(zipCode);
+    setOriginCoords(coords);
+    search(zipCode, driveTime);
+  }, [zipCode, driveTime, search]);
 
-  useEffect(() => {
-    if (originWeather) {
-      console.log('Origin weather:', originWeather);
-    }
-  }, [originWeather]);
-
-  useEffect(() => {
-    if (!isLoading && results.length > 0) {
-      console.log('=== SEARCH COMPLETE ===');
-      console.log(`Found ${results.length} destinations`);
-      console.log('\nTop 10 warmest destinations:');
-      results.slice(0, 10).forEach((r, i) => {
-        console.log(
-          `${i + 1}. ${r.city.name}, ${r.city.state}: ${r.weather.feelsLike.toFixed(1)}°F ` +
-          `(+${r.tempDifference.toFixed(1)}°F) - ${r.distance.toFixed(0)} mi, ${r.driveTime.toFixed(1)} hrs`
-        );
-      });
-      console.log('\nTop 5 "Best Bang for Your Mile":');
-      topFiveByEfficiency.forEach((r, i) => {
-        console.log(
-          `${i + 1}. ${r.city.name}, ${r.city.state}: ${r.milesPerDegree.toFixed(1)} mi/°F ` +
-          `(${r.distance.toFixed(0)} mi for +${r.tempDifference.toFixed(1)}°F)`
-        );
-      });
-    }
-  }, [isLoading, results, topFiveByEfficiency]);
-
-  useEffect(() => {
-    if (error) {
-      console.error('Search error:', error);
-    }
-  }, [error]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleSearch();
+      }
+    },
+    [handleSearch]
+  );
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] p-4">
-      <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-[var(--color-warm-800)]">
-          Get Me Outta Here!
-        </h1>
-        <p className="text-[var(--color-warm-600)] mt-2">
-          Find warmer destinations within driving distance
-        </p>
-      </header>
-      <main className="max-w-6xl mx-auto text-center">
-        {error && (
-          <p className="text-red-600 mb-4">{error}</p>
-        )}
-        {isLoading ? (
-          <div>
-            <p className="text-[var(--color-warm-700)] mb-2">
-              Searching for warmer destinations...
-            </p>
-            <div className="w-64 mx-auto bg-[var(--color-warm-200)] rounded-full h-4">
-              <div
-                className="bg-[var(--color-warm-500)] h-4 rounded-full transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <p className="text-sm text-[var(--color-warm-600)] mt-2">
-              {progress}% - Found {results.length} destinations
-            </p>
-          </div>
-        ) : results.length > 0 ? (
-          <div>
-            <p className="text-[var(--color-warm-700)] mb-4">
-              Found {results.length} destinations! Check the console for details.
-            </p>
-            <p className="text-sm text-[var(--color-warm-600)]">
-              Warmest: {results[0]?.city.name}, {results[0]?.city.state} at{' '}
-              {results[0]?.weather.feelsLike.toFixed(1)}°F
-            </p>
-          </div>
-        ) : (
-          <p className="text-[var(--color-warm-700)]">
-            Open the browser console to see search results
+    <div className="min-h-screen bg-[var(--color-bg)]">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-[var(--color-warm-600)] to-[var(--color-warm-500)] text-white py-6 px-4 shadow-lg">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-2">
+            <span>🚗</span>
+            Get Me Outta Here!
+          </h1>
+          <p className="text-[var(--color-warm-100)] mt-1">
+            Find warmer destinations within driving distance
           </p>
+        </div>
+      </header>
+
+      {/* Search Controls */}
+      <div className="bg-white shadow-md py-4 px-4 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto flex flex-wrap items-end gap-4" onKeyDown={handleKeyDown}>
+          <ZipInput
+            value={zipCode}
+            onChange={setZipCode}
+            disabled={isLoading}
+          />
+
+          <DriveTimeSlider
+            value={driveTime}
+            onChange={setDriveTime}
+            disabled={isLoading}
+          />
+
+          <button
+            onClick={handleSearch}
+            disabled={isLoading || zipCode.length !== 5}
+            className={`
+              px-6 py-2 rounded-lg font-semibold text-white
+              transition-all duration-200
+              ${isLoading || zipCode.length !== 5
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-[var(--color-warm-500)] hover:bg-[var(--color-warm-600)] active:scale-95'
+              }
+            `}
+          >
+            {isLoading ? 'Searching...' : 'Search'}
+          </button>
+
+          {originWeather && (
+            <div className="ml-auto text-sm text-[var(--color-warm-700)]">
+              <span className="font-medium">Your weather:</span>{' '}
+              <span className="font-mono">{originWeather.feelsLike.toFixed(0)}°F</span>
+              <span className="text-[var(--color-warm-500)]"> feels like</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-6xl mx-auto px-4 mt-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column: Map */}
+          <div className="lg:col-span-2">
+            <MapView
+              originCoords={originCoords}
+              results={results}
+              originTemp={originWeather?.feelsLike}
+            />
+          </div>
+
+          {/* Right Column: Top 5 + Results */}
+          <div className="space-y-6">
+            <TopFivePanel results={topFiveByEfficiency} />
+            <ResultsList
+              results={results}
+              isLoading={isLoading}
+              progress={progress}
+            />
+          </div>
+        </div>
+
+        {/* Encouraging message when results are found */}
+        {!isLoading && results.length > 0 && results[0].tempDifference > 0 && (
+          <div className="mt-6 text-center">
+            <p className="text-xl text-[var(--color-warm-700)]">
+              🌴 Time to thaw out! {results[0].city.name} is{' '}
+              <span className="font-bold text-green-600">
+                {results[0].tempDifference.toFixed(0)}°F warmer
+              </span>{' '}
+              and just {results[0].driveTime.toFixed(1)} hours away!
+            </p>
+          </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="bg-[var(--color-warm-100)] py-4 px-4 mt-8">
+        <div className="max-w-6xl mx-auto text-center text-sm text-[var(--color-warm-600)]">
+          <p>
+            Weather data from{' '}
+            <a
+              href="https://open-meteo.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[var(--color-warm-800)]"
+            >
+              Open-Meteo
+            </a>
+            {' '}• Maps by{' '}
+            <a
+              href="https://www.openstreetmap.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[var(--color-warm-800)]"
+            >
+              OpenStreetMap
+            </a>
+          </p>
+          <p className="mt-1">
+            Distances are crow-flies estimates at 55 mph average
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
