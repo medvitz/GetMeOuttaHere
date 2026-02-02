@@ -10,19 +10,20 @@ interface ResultsListProps {
 export function ResultsList({ results, isLoading, progress }: ResultsListProps) {
   if (isLoading && results.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="bg-white rounded-lg shadow-md p-4 animate-bounce-in">
         <h2 className="text-lg font-semibold text-[var(--color-warm-800)] mb-3">
           Destinations
         </h2>
         <div className="flex flex-col items-center py-8">
-          <div className="w-full bg-[var(--color-warm-200)] rounded-full h-2 mb-2">
+          <div className="text-4xl mb-4 animate-spin-slow">🌞</div>
+          <div className="w-full bg-[var(--color-warm-200)] rounded-full h-3 mb-2 overflow-hidden">
             <div
-              className="bg-[var(--color-warm-500)] h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-[var(--color-warm-400)] to-[var(--color-warm-500)] h-3 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-[var(--color-warm-600)]">
-            Finding warmer destinations...
+          <p className="text-sm text-[var(--color-warm-600)] animate-pulse-warm">
+            Scanning for sunshine...
           </p>
         </div>
       </div>
@@ -35,9 +36,15 @@ export function ResultsList({ results, isLoading, progress }: ResultsListProps) 
         <h2 className="text-lg font-semibold text-[var(--color-warm-800)] mb-3">
           Destinations
         </h2>
-        <p className="text-[var(--color-warm-600)] text-center py-8">
-          Enter your zip code and click Search to find warmer destinations
-        </p>
+        <div className="text-center py-8">
+          <p className="text-4xl mb-3">🗺️</p>
+          <p className="text-[var(--color-warm-600)]">
+            Ready to escape the cold?
+          </p>
+          <p className="text-sm text-[var(--color-warm-500)] mt-1">
+            Enter your zip code and hit Search!
+          </p>
+        </div>
       </div>
     );
   }
@@ -55,7 +62,7 @@ export function ResultsList({ results, isLoading, progress }: ResultsListProps) 
         )}
       </div>
 
-      <div className="overflow-auto max-h-96">
+      <div className="overflow-auto max-h-96 custom-scrollbar">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-[var(--color-warm-100)]">
             <tr className="text-left text-[var(--color-warm-700)]">

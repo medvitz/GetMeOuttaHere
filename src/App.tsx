@@ -75,14 +75,24 @@ function App() {
             disabled={isLoading || zipCode.length !== 5}
             className={`
               px-6 py-2 rounded-lg font-semibold text-white
-              transition-all duration-200
+              transition-all duration-200 flex items-center gap-2
               ${isLoading || zipCode.length !== 5
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[var(--color-warm-500)] hover:bg-[var(--color-warm-600)] active:scale-95'
+                : 'bg-[var(--color-warm-500)] hover:bg-[var(--color-warm-600)] active:scale-95 hover:shadow-lg'
               }
             `}
           >
-            {isLoading ? 'Searching...' : 'Search'}
+            {isLoading ? (
+              <>
+                <span className="animate-spin-slow">🌞</span>
+                Searching...
+              </>
+            ) : (
+              <>
+                <span>🔍</span>
+                Find Sunshine
+              </>
+            )}
           </button>
 
           {originWeather && (
@@ -129,14 +139,23 @@ function App() {
 
         {/* Encouraging message when results are found */}
         {!isLoading && results.length > 0 && results[0].tempDifference > 0 && (
-          <div className="mt-6 text-center">
-            <p className="text-xl text-[var(--color-warm-700)]">
-              🌴 Time to thaw out! {results[0].city.name} is{' '}
-              <span className="font-bold text-green-600">
-                {results[0].tempDifference.toFixed(0)}°F warmer
-              </span>{' '}
-              and just {results[0].driveTime.toFixed(1)} hours away!
-            </p>
+          <div className="mt-6 text-center animate-slide-up">
+            <div className="inline-block bg-gradient-to-r from-[var(--color-warm-100)] to-[var(--color-warm-200)] rounded-xl px-6 py-4 shadow-md">
+              <p className="text-xl text-[var(--color-warm-800)]">
+                <span className="text-2xl mr-2">🌴</span>
+                Your escape plan is ready!
+              </p>
+              <p className="text-lg text-[var(--color-warm-700)] mt-1">
+                {results[0].city.name}, {results[0].city.state} is{' '}
+                <span className="font-bold text-green-600">
+                  {results[0].tempDifference.toFixed(0)}°F warmer
+                </span>{' '}
+                — just {results[0].driveTime.toFixed(1)} hours away!
+              </p>
+              <p className="text-sm text-[var(--color-warm-500)] mt-2">
+                Pack your bags and chase the sunshine! ☀️
+              </p>
+            </div>
           </div>
         )}
       </main>
