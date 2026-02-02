@@ -165,6 +165,7 @@ export function ResultsList({ results, isLoading, progress }: ResultsListProps) 
                 <SortIcon active={sortColumn === 'drive'} direction={sortDirection} />
               </th>
               <th className="py-2 px-2 text-center">Sky</th>
+              <th className="py-2 px-2"></th>
             </tr>
           </thead>
           <tbody>
@@ -205,6 +206,9 @@ export function ResultsList({ results, isLoading, progress }: ResultsListProps) 
                 <td className="py-2 px-2 text-center">
                   <WeatherIcon cloudCover={result.weather.cloudCover} size="sm" />
                 </td>
+                <td className="py-2 px-2">
+                  <HotelLink city={result.city.name} state={result.city.state} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -230,4 +234,26 @@ function getTemperatureColor(temp: number): string {
   if (temp >= 50) return 'text-green-600';
   if (temp >= 40) return 'text-cyan-600';
   return 'text-blue-600';
+}
+
+function HotelLink({ city, state }: { city: string; state: string }) {
+  const affiliateId = import.meta.env.VITE_BOOKING_AFFILIATE_ID;
+
+  if (!affiliateId) {
+    return null;
+  }
+
+  const searchQuery = encodeURIComponent(`${city}, ${state}, USA`);
+  const url = `https://www.booking.com/searchresults.html?ss=${searchQuery}&aid=${affiliateId}`;
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-xs text-[var(--color-warm-500)] hover:text-[var(--color-warm-700)] hover:underline whitespace-nowrap"
+    >
+      Book hotel &rarr;
+    </a>
+  );
 }

@@ -6,6 +6,7 @@ import { DriveTimeSlider } from './components/DriveTimeSlider';
 import { ResultsList } from './components/ResultsList';
 import { TopFivePanel } from './components/TopFivePanel';
 import { MapView } from './components/MapView';
+import { EmailSignup } from './components/EmailSignup';
 import type { Coordinates } from './types';
 
 function App() {
@@ -173,6 +174,13 @@ function App() {
             />
           </div>
         </div>
+
+        {/* Email Signup - shown after search has results */}
+        {results.length > 0 && (
+          <div className="mt-6">
+            <EmailSignup />
+          </div>
+        )}
       </main>
 
       {/* Footer */}
