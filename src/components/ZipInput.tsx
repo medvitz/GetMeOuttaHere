@@ -51,7 +51,7 @@ export function ZipInput({ value, onChange, disabled }: ZipInputProps) {
         onBlur={handleBlur}
         disabled={disabled}
         className={`
-          w-32 px-3 py-2 text-lg font-mono text-center
+          w-36 px-3 py-2 text-lg font-mono text-center
           border-2 rounded-lg
           bg-white
           transition-colors
