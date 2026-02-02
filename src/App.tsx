@@ -57,43 +57,52 @@ function App() {
 
       {/* Search Controls */}
       <div className="bg-white shadow-md py-4 px-4 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto flex flex-wrap items-end gap-4" onKeyDown={handleKeyDown}>
-          <ZipInput
-            value={zipCode}
-            onChange={setZipCode}
-            disabled={isLoading}
-          />
+        <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-6" onKeyDown={handleKeyDown}>
+          <div className="flex items-center gap-2">
+            <span className="step-circle">1</span>
+            <ZipInput
+              value={zipCode}
+              onChange={setZipCode}
+              disabled={isLoading}
+            />
+          </div>
 
-          <DriveTimeSlider
-            value={driveTime}
-            onChange={setDriveTime}
-            disabled={isLoading}
-          />
+          <div className="flex items-center gap-2">
+            <span className="step-circle">2</span>
+            <DriveTimeSlider
+              value={driveTime}
+              onChange={setDriveTime}
+              disabled={isLoading}
+            />
+          </div>
 
-          <button
-            onClick={handleSearch}
-            disabled={isLoading || zipCode.length !== 5}
-            className={`
-              px-6 py-2 rounded-lg font-semibold text-white
-              transition-all duration-200 flex items-center gap-2
-              ${isLoading || zipCode.length !== 5
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[var(--color-warm-500)] hover:bg-[var(--color-warm-600)] active:scale-95 hover:shadow-lg'
-              }
-            `}
-          >
-            {isLoading ? (
-              <>
-                <span className="animate-spin-slow">🌞</span>
-                Searching...
-              </>
-            ) : (
-              <>
-                <span>🔍</span>
-                Find Sunshine
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="step-circle">3</span>
+            <button
+              onClick={handleSearch}
+              disabled={isLoading || zipCode.length !== 5}
+              className={`
+                px-6 py-2 rounded-lg font-semibold text-white
+                transition-all duration-200 flex items-center gap-2
+                ${isLoading || zipCode.length !== 5
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-[var(--color-warm-500)] hover:bg-[var(--color-warm-600)] active:scale-95 hover:shadow-lg'
+                }
+              `}
+            >
+              {isLoading ? (
+                <>
+                  <span className="animate-spin-slow">🌞</span>
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <span>🔍</span>
+                  Find Sunshine
+                </>
+              )}
+            </button>
+          </div>
 
           {originWeather && (
             <div className="ml-auto text-sm text-[var(--color-warm-700)]">
