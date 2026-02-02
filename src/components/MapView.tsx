@@ -88,13 +88,12 @@ export function MapView({ originCoords, results, originTemp }: MapViewProps) {
   const defaultZoom = 4;
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <MapContainer
-        center={defaultCenter}
-        zoom={defaultZoom}
-        style={{ height: '400px', width: '100%' }}
-        scrollWheelZoom={true}
-      >
+    <MapContainer
+      center={defaultCenter}
+      zoom={defaultZoom}
+      style={{ height: '360px', width: '100%' }}
+      scrollWheelZoom={true}
+    >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -141,6 +140,5 @@ export function MapView({ originCoords, results, originTemp }: MapViewProps) {
           </Marker>
         ))}
       </MapContainer>
-    </div>
   );
 }

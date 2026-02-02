@@ -115,32 +115,11 @@ function App() {
       )}
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Map */}
-          <div className="lg:col-span-2">
-            <MapView
-              originCoords={originCoords}
-              results={results}
-              originTemp={originWeather?.feelsLike}
-            />
-          </div>
-
-          {/* Right Column: Top 5 + Results */}
-          <div className="space-y-6">
-            <TopFivePanel results={topFiveByEfficiency} />
-            <ResultsList
-              results={results}
-              isLoading={isLoading}
-              progress={progress}
-            />
-          </div>
-        </div>
-
-        {/* Encouraging message when results are found */}
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        {/* Escape Plan Banner - shown when results found */}
         {!isLoading && results.length > 0 && results[0].tempDifference > 0 && (
-          <div className="mt-6 text-center animate-slide-up">
-            <div className="inline-block bg-gradient-to-r from-[var(--color-warm-100)] to-[var(--color-warm-200)] rounded-xl px-6 py-4 shadow-md">
+          <div className="mb-6 animate-slide-up">
+            <div className="bg-gradient-to-r from-[var(--color-warm-100)] to-[var(--color-warm-200)] rounded-lg shadow-md px-6 py-4 text-center">
               <p className="text-xl text-[var(--color-warm-800)]">
                 <span className="text-2xl mr-2">🌴</span>
                 Your escape plan is ready!
@@ -151,13 +130,40 @@ function App() {
                   {results[0].tempDifference.toFixed(0)}°F warmer
                 </span>{' '}
                 — just {results[0].driveTime.toFixed(1)} hours away!
-              </p>
-              <p className="text-sm text-[var(--color-warm-500)] mt-2">
-                Pack your bags and chase the sunshine! ☀️
+                <span className="ml-2">Pack your bags and chase the sunshine! ☀️</span>
               </p>
             </div>
           </div>
         )}
+
+        {/* Three Panel Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Map */}
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="px-4 py-3 border-b border-[var(--color-warm-100)]">
+              <h2 className="text-lg font-semibold text-[var(--color-warm-800)]">Map</h2>
+            </div>
+            <MapView
+              originCoords={originCoords}
+              results={results}
+              originTemp={originWeather?.feelsLike}
+            />
+          </div>
+
+          {/* Best Bang for Your Mile */}
+          <div>
+            <TopFivePanel results={topFiveByEfficiency} />
+          </div>
+
+          {/* Destinations */}
+          <div>
+            <ResultsList
+              results={results}
+              isLoading={isLoading}
+              progress={progress}
+            />
+          </div>
+        </div>
       </main>
 
       {/* Footer */}
