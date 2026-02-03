@@ -35,7 +35,7 @@ export function DriveTimeSlider({ value, onChange, disabled }: DriveTimeSliderPr
           onChange={handleChange}
           disabled={disabled}
           className={`
-            w-48 h-2 rounded-lg appearance-none cursor-pointer
+            w-48 h-2 rounded-lg appearance-none cursor-pointer slider-thumb
             bg-[var(--color-warm-200)]
             accent-[var(--color-warm-500)]
             disabled:cursor-not-allowed disabled:opacity-50

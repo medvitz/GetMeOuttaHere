@@ -251,9 +251,10 @@ function HotelLink({ city, state }: { city: string; state: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-xs text-[var(--color-warm-500)] hover:text-[var(--color-warm-700)] hover:underline whitespace-nowrap"
+      className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-full shadow-sm hover:shadow-md transition-all duration-200 whitespace-nowrap"
     >
-      Book hotel &rarr;
+      <span>🏨</span>
+      Book Hotel
     </a>
   );
 }

@@ -58,9 +58,25 @@ function createTemperatureIcon(temp: number, isOrigin: boolean = false): L.DivIc
   });
 }
 
-function MapBoundsUpdater({ originCoords, results }: { originCoords: Coordinates | null; results: DestinationResult[] }) {
+function MapController({ originCoords, results }: { originCoords: Coordinates | null; results: DestinationResult[] }) {
   const map = useMap();
 
+  // Invalidate size on mount and when container might have resized
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
+    const handleResize = () => map.invalidateSize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [map]);
+
+  // Update bounds when data changes
   useEffect(() => {
     if (!originCoords && results.length === 0) return;
 
@@ -99,7 +115,7 @@ export function MapView({ originCoords, results, originTemp }: MapViewProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <MapBoundsUpdater originCoords={originCoords} results={results} />
+        <MapController originCoords={originCoords} results={results} />
 
         {originCoords && (
           <Marker
