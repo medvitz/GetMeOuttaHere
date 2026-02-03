@@ -243,8 +243,16 @@ function HotelLink({ city, state }: { city: string; state: string }) {
     return null;
   }
 
+  // Format dates as YYYY-MM-DD for Booking.com
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const checkin = today.toISOString().split('T')[0];
+  const checkout = tomorrow.toISOString().split('T')[0];
+
   const searchQuery = encodeURIComponent(`${city}, ${state}, USA`);
-  const url = `https://www.booking.com/searchresults.html?ss=${searchQuery}&aid=${affiliateId}`;
+  const url = `https://www.booking.com/searchresults.html?ss=${searchQuery}&aid=${affiliateId}&checkin=${checkin}&checkout=${checkout}&no_rooms=1&group_adults=2`;
 
   return (
     <a

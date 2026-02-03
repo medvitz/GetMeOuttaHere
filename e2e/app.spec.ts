@@ -139,4 +139,46 @@ test.describe('Get Me Outta Here! App', () => {
     const results = await page.locator('table tbody tr').count();
     expect(results).toBeGreaterThan(0);
   });
+
+  test('hotel booking links include pre-filled dates', async ({ page }) => {
+    // Enter zip and search
+    await page.getByLabel('Your Zip Code').fill('10001');
+    await page.getByRole('button', { name: /Find Sunshine/i }).click();
+
+    // Wait for results
+    await expect(page.getByText(/destinations found/i)).toBeVisible({ timeout: 60000 });
+
+    // Find a hotel booking link
+    const hotelLink = page.getByRole('link', { name: /Book Hotel/i }).first();
+
+    // Skip test if no hotel links are shown (affiliate ID not configured)
+    const linkCount = await page.getByRole('link', { name: /Book Hotel/i }).count();
+    if (linkCount === 0) {
+      test.skip();
+      return;
+    }
+
+    // Get the href attribute
+    const href = await hotelLink.getAttribute('href');
+    expect(href).toBeTruthy();
+
+    // Verify URL contains expected parameters
+    expect(href).toContain('booking.com');
+    expect(href).toContain('checkin=');
+    expect(href).toContain('checkout=');
+    expect(href).toContain('no_rooms=1');
+    expect(href).toContain('group_adults=2');
+
+    // Verify date format (YYYY-MM-DD)
+    const checkinMatch = href!.match(/checkin=(\d{4}-\d{2}-\d{2})/);
+    const checkoutMatch = href!.match(/checkout=(\d{4}-\d{2}-\d{2})/);
+    expect(checkinMatch).toBeTruthy();
+    expect(checkoutMatch).toBeTruthy();
+
+    // Verify checkout is one day after checkin
+    const checkinDate = new Date(checkinMatch![1]);
+    const checkoutDate = new Date(checkoutMatch![1]);
+    const dayDiff = (checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24);
+    expect(dayDiff).toBe(1);
+  });
 });
