@@ -20,12 +20,14 @@ export function EmailSignup() {
     setStatus('submitting');
 
     try {
+      const formData = new FormData();
+      formData.append('email_address', email);
+
       const response = await fetch(
-        `https://api.convertkit.com/v3/forms/${formId}/subscribe`,
+        `https://app.convertkit.com/forms/${formId}/subscriptions`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
+          body: formData,
         }
       );
 
